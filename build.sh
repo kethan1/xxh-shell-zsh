@@ -24,14 +24,18 @@ done
 cp $CDIR/zshrc $build_dir/.zshrc
 
 # tag=$(curl --silent https://api.github.com/repos/romkatv/zsh-bin/releases/latest | grep '"tag_name":' | cut -d'"' -f4)
-tag=v3.0.1
+tag=v6.1.1
 arch=$(uname -m)
-if [[ $arch == x86_64* ]]; then
-	distfile=zsh-5.8-linux-x86_64
-elif [[ $arch == arm* ]]; then
-	distfile=zsh-5.8-linux-armv7l
-fi
 
+case "$arch" in
+    "armv6l" | "armv7l" | "aarch64" | "i386" | "i586" | "i686" | "x86_64")
+        distfile="zsh-5.8-linux-$arch"
+        ;;
+    *)
+        echo "Unsupported architecture. Defaulting to x86_64."
+        distfile=zsh-5.8-linux-x86_64
+        ;;
+esac
 
 url="https://github.com/romkatv/zsh-bin/releases/download/$tag/$distfile.tar.gz"
 tarname=`basename $url`
@@ -51,10 +55,5 @@ else
 fi
 
 tar -xzf $tarname
-if [[ $arch == x86_64* ]]; then
-mv zsh-5.8-linux-x86_64/* .
-elif  [[ $arch == arm* ]]; then
-mv zsh-5.8-linux-armv7l/* .
-fi
 
 rm $tarname
